@@ -77,7 +77,8 @@ awful.screen.connect_for_each_screen(function(s)
       layout = wibox.layout.fixed.horizontal,
       s.mylayoutbox,
       wibox.widget{
-        text = "Bopanna",
+        font = "25",
+        text = "  ",
         widget = wibox.widget.textbox
       },
       --RC.launcher,
