@@ -15,13 +15,26 @@ local deco = {
 local taglist_buttons  = deco.taglist()
 local tasklist_buttons = deco.tasklist()
 
+local cpu_widget = require("deco.cpu-widget.cpu-widget")
+--local brightness_widget = require("deco.brightness-widget.brightness")
+local calendar_widget = require("deco.calendar-widget.calendar")
 local _M = {}
-
+local cw = calendar_widget({
+    placement = "top_right",
+    start_sunday = true
+})
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 -- {{{ Wibar
 -- Create a textclock widget
 mytextclock = wibox.widget.textclock()
+
+mytextclock:connect_signal(
+  "button::press",
+  function(_,_,_,button)
+    if button == 1 then cw.toggle() end
+  end
+)
 
 awful.screen.connect_for_each_screen(function(s)
   -- Wallpaper
@@ -62,17 +75,23 @@ awful.screen.connect_for_each_screen(function(s)
     layout = wibox.layout.align.horizontal,
     { -- Left widgets
       layout = wibox.layout.fixed.horizontal,
-      RC.launcher,
+      s.mylayoutbox,
+      wibox.widget{
+        text = "Bopanna",
+        widget = wibox.widget.textbox
+      },
+      --RC.launcher,
       s.mytaglist,
       s.mypromptbox,
     },
     s.mytasklist, -- Middle widget
     { -- Right widgets
       layout = wibox.layout.fixed.horizontal,
-      mykeyboardlayout,
+      -- mykeyboardlayout,
+      cpu_widget(),
+      -- brightness_widget(),
       wibox.widget.systray(),
-      mytextclock,
-      s.mylayoutbox,
+      mytextclock
     },
   }
 end)
