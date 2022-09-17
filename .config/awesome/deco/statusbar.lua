@@ -36,7 +36,18 @@ mytextclock:connect_signal(
   end
 )
 
-awful.screen.connect_for_each_screen(function(s)
+local right_arrow = wibox.widget({
+  font = "35",
+  text = "",
+  widget = wibox.widget.textbox
+})
+local left_arrow = wibox.widget({
+  font = "35",
+  text = "",
+  widget = wibox.widget.textbox
+})
+
+  awful.screen.connect_for_each_screen(function(s)
   -- Wallpaper
   set_wallpaper(s)
 
@@ -77,12 +88,14 @@ awful.screen.connect_for_each_screen(function(s)
       layout = wibox.layout.fixed.horizontal,
       s.mylayoutbox,
       wibox.widget{
-        font = "25",
-        text = "  ",
+        font = "35",
+        text = "",
         widget = wibox.widget.textbox
       },
+      left_arrow,
       --RC.launcher,
       s.mytaglist,
+      right_arrow,
       s.mypromptbox,
     },
     s.mytasklist, -- Middle widget
