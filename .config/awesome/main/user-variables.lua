@@ -1,7 +1,7 @@
 local home = os.getenv("HOME")
 
 local _M = {
-  terminal = "st",
+  terminal = "alacritty",
   modkey = "Mod4",
 }
 

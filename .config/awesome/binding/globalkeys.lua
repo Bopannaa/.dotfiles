@@ -213,7 +213,7 @@ function _M.get()
     ),
     awful.key(
       { modkey }, "d",
-      function() awful.spawn("dmenu_run") end,
+      function() awful.spawn("rofi -show drun") end,
       {description = "show Dmenu", group = "launcher"}
     )
   )
