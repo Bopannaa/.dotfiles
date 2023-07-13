@@ -11,50 +11,34 @@ from libqtile.lazy import lazy
 from typing import List
 
 mod = "mod4"
-myTerm = "st"
-myBrowser = "qutebrowser"
+myTerm = "alacritty"
+myBrowser = "firefox"
 sleepCommand = "sleep 1 && xset -display :0.0 dpms force off"
+ssh_youtube = "sshpass -p '23121989' ssh bopanna@192.168.43.231 DISPLAY=:0 ytfzf -Df"
+power_menu_cmd = "echo -e 'poweroff\nreboot\nsuspend' | dmenu -l 5 -fn 'Ubuntu-18' | xargs systemctl"
 
+
+def power_menu(qtile):
+    subprocess.run([power_menu_cmd], shell=True)
 
 def Sleep_laptop(qtile):
     subprocess.run([sleepCommand], shell=True)
 
+def browse_youtube_remote(qtile):
+    subprocess.run([ssh_youtube], shell=True)
 
 keys = [
     ### The essentials
     Key([mod], "Return", lazy.spawn(myTerm), desc="Launches My Terminal"),
     Key([mod], "d", lazy.spawn("dmenu_run"), desc="Run Launcher"),
-    Key(
-        [mod],
-        "s",
-        lazy.function(Sleep_laptop),
-        desc="Laptop Sleep",
-    ),
-    Key([mod], "b", lazy.spawn(myBrowser), desc="Qutebrowser"),
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle through layouts"),
+    Key([mod], "s", lazy.function(Sleep_laptop), desc="Laptop Sleep"),
+    Key([mod], "b", lazy.spawn(myBrowser), desc="Launch Firefox"),
+    Key([mod], "space", lazy.next_layout(), desc="Toggle through layouts"),
     Key([mod], "q", lazy.window.kill(), desc="Kill active window"),
     Key([mod, "shift"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload Qtile Config"),
-    Key([mod, "shift"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key(
-        ["control", "shift"],
-        "e",
-        lazy.spawn("emacsclient -c -a emacs"),
-        desc="Doom Emacs",
-    ),
-    ### Treetab controls
-    Key(
-        [mod, "shift"],
-        "h",
-        lazy.layout.move_left(),
-        desc="Move up a section in treetab",
-    ),
-    Key(
-        [mod, "shift"],
-        "l",
-        lazy.layout.move_right(),
-        desc="Move down a section in treetab",
-    ),
+    Key([mod, "shift"], "q", lazy.function(power_menu), desc="Shutdown Qtile"),
+
     ### Window controls
     Key([mod], "j", lazy.layout.down(), desc="Move focus down in current stack pane"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up in current stack pane"),
@@ -105,16 +89,11 @@ keys = [
     ),
     Key(
         [mod],
-        "space",
+        "Tab",
         lazy.layout.next(),
         desc="Switch window focus to other pane(s) of stack",
     ),
-    Key(
-        [mod, "shift"],
-        "space",
-        lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack",
-    ),
+
     # Emacs programs launched using the key chord CTRL+e followed by 'key'
     KeyChord(
         [mod],
@@ -185,24 +164,8 @@ keys = [
         [mod],
         "p",
         [
-            Key([], "h", lazy.spawn("dm-hub"), desc="List all dmscripts"),
-            Key([], "a", lazy.spawn("dm-sounds"), desc="Choose ambient sound"),
-            Key([], "b", lazy.spawn("dm-setbg"), desc="Set background"),
-            Key([], "c", lazy.spawn("dtos-colorscheme"), desc="Choose color scheme"),
-            Key(
-                [], "e", lazy.spawn("dm-confedit"), desc="Choose a config file to edit"
-            ),
-            Key([], "i", lazy.spawn("dm-maim"), desc="Take a screenshot"),
-            Key([], "k", lazy.spawn("dm-kill"), desc="Kill processes "),
-            Key([], "m", lazy.spawn("dm-man"), desc="View manpages"),
-            Key([], "n", lazy.spawn("dm-note"), desc="Store and copy notes"),
-            Key([], "o", lazy.spawn("dm-bookman"), desc="Browser bookmarks"),
-            Key([], "p", lazy.spawn('passmenu -p "Pass: "'), desc="Logout menu"),
-            Key([], "q", lazy.spawn("dm-logout"), desc="Logout menu"),
-            Key([], "r", lazy.spawn("dm-radio"), desc="Listen to online radio"),
-            Key([], "s", lazy.spawn("dm-websearch"), desc="Search various engines"),
-            Key([], "t", lazy.spawn("dm-translate"), desc="Translate text"),
             Key([], "y", lazy.spawn("ytfzf -Df"), desc="Browse Youtube"),
+            Key([], "d", lazy.function(ssh_youtube), desc="Browse Youtube Remote"),
         ],
     ),
 ]
@@ -223,14 +186,12 @@ colors = [
 groups = [
     Group("DEV", layout="monadtall"),
     Group("WWW", layout="monadtall"),
-    Group("SYS", layout="monadtall"),
-    Group("SYS", layout="monadtall"),
     Group("DOC", layout="monadtall"),
-    Group("VBOX", layout="monadtall"),
     Group("CHAT", layout="monadtall"),
     Group("MUS", layout="monadtall"),
     Group("VID", layout="monadtall"),
     Group("GFX", layout="floating"),
+    Group("SYS", layout="monadtall"),
 ]
 
 # Allow MODKEY+[0 through 9] to bind to groups, see https://docs.qtile.org/en/stable/manual/config/groups.html
@@ -257,30 +218,10 @@ layouts = [
     # layout.VerticalTile(**layout_theme),
     # layout.Matrix(**layout_theme),
     # layout.Zoomy(**layout_theme),
+    # layout.RatioTile(**layout_theme),
     layout.MonadTall(**layout_theme),
-    layout.Max(**layout_theme),
     layout.Stack(num_stacks=2),
-    layout.RatioTile(**layout_theme),
-    layout.TreeTab(
-        font="Ubuntu",
-        fontsize=10,
-        sections=["FIRST", "SECOND", "THIRD", "FOURTH"],
-        section_fontsize=10,
-        border_width=2,
-        bg_color="1c1f24",
-        active_bg="c678dd",
-        active_fg="000000",
-        inactive_bg="a9a1e1",
-        inactive_fg="1c1f24",
-        padding_left=0,
-        padding_x=0,
-        padding_y=5,
-        section_top=10,
-        section_bottom=20,
-        level_shift=8,
-        vspace=3,
-        panel_width=200,
-    ),
+    layout.Max(**layout_theme),
     layout.Floating(**layout_theme),
 ]
 
@@ -303,7 +244,7 @@ def init_widgets_list():
         widget.Sep(linewidth=0, padding=6, foreground=colors[2], background=colors[0]),
         widget.GroupBox(
             font="Ubuntu Bold",
-            fontsize=9,
+            fontsize=12,
             margin_y=3,
             margin_x=0,
             padding_y=5,
@@ -348,28 +289,12 @@ def init_widgets_list():
         widget.WindowName(foreground=colors[6], background=colors[0], padding=0),
         widget.Systray(background=colors[0], padding=5),
         widget.Sep(linewidth=0, padding=6, foreground=colors[0], background=colors[0]),
-        widget.TextBox(
-            text="",
-            font="Ubuntu Mono",
-            background=colors[0],
-            foreground=colors[3],
-            padding=0,
-            fontsize=37,
-        ),
         widget.Net(
-            interface="wlp12s0",
+            interface="wlan0",
             format="Net: {down} ↓↑ {up}",
             foreground=colors[1],
             background=colors[3],
             padding=5,
-        ),
-        widget.TextBox(
-            text="",
-            font="Ubuntu Mono",
-            background=colors[3],
-            foreground=colors[4],
-            padding=0,
-            fontsize=37,
         ),
         widget.ThermalSensor(
             foreground=colors[1],
@@ -378,35 +303,6 @@ def init_widgets_list():
             fmt="Temp: {}",
             padding=5,
         ),
-        widget.TextBox(
-            text="",
-            font="Ubuntu Mono",
-            background=colors[4],
-            foreground=colors[5],
-            padding=0,
-            fontsize=37,
-        ),
-        widget.CheckUpdates(
-            update_interval=1800,
-            distro="Arch_checkupdates",
-            display_format="Updates: {updates} ",
-            foreground=colors[1],
-            colour_have_updates=colors[1],
-            colour_no_updates=colors[1],
-            mouse_callbacks={
-                "Button1": lambda: qtile.cmd_spawn(myTerm + " -e yay -Syu")
-            },
-            padding=5,
-            background=colors[5],
-        ),
-        widget.TextBox(
-            text="",
-            font="Ubuntu Mono",
-            background=colors[5],
-            foreground=colors[6],
-            padding=0,
-            fontsize=37,
-        ),
         widget.Memory(
             foreground=colors[1],
             background=colors[6],
@@ -414,24 +310,8 @@ def init_widgets_list():
             fmt="Mem: {}",
             padding=5,
         ),
-        widget.TextBox(
-            text="",
-            font="Ubuntu Mono",
-            background=colors[6],
-            foreground=colors[7],
-            padding=0,
-            fontsize=37,
-        ),
         widget.Volume(
             foreground=colors[1], background=colors[7], fmt="Vol: {}", padding=5
-        ),
-        widget.TextBox(
-            text="",
-            font="Ubuntu Mono",
-            background=colors[7],
-            foreground=colors[9],
-            padding=0,
-            fontsize=37,
         ),
         widget.Clock(
             foreground=colors[1], background=colors[9], format="%A, %B %d - %H:%M "
@@ -440,32 +320,21 @@ def init_widgets_list():
     return widgets_list
 
 
-def init_widgets_screen1():
-    widgets_screen1 = init_widgets_list()
-    del widgets_screen1[
-        9:10
-    ]  # Slicing removes unwanted widgets (systray) on Monitors 1,3
-    return widgets_screen1
-
-
-def init_widgets_screen2():
-    widgets_screen2 = init_widgets_list()
-    return widgets_screen2  # Monitor 2 will display all widgets in widgets_list
+def init_widgets_screen():
+    widgets_screen = init_widgets_list()
+    return widgets_screen
 
 
 def init_screens():
     return [
-        Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=1.0, size=20)),
-        Screen(top=bar.Bar(widgets=init_widgets_screen2(), opacity=1.0, size=20)),
-        Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=1.0, size=20)),
+        Screen(top=bar.Bar(widgets=init_widgets_screen(), opacity=1.0, size=20)),
     ]
 
 
 if __name__ in ["config", "__main__"]:
     screens = init_screens()
     widgets_list = init_widgets_list()
-    widgets_screen1 = init_widgets_screen1()
-    widgets_screen2 = init_widgets_screen2()
+    widgets_screen = init_widgets_screen()
 
 
 def window_to_prev_group(qtile):
@@ -480,36 +349,9 @@ def window_to_next_group(qtile):
         qtile.currentWindow.togroup(qtile.groups[i + 1].name)
 
 
-def window_to_previous_screen(qtile):
-    i = qtile.screens.index(qtile.current_screen)
-    if i != 0:
-        group = qtile.screens[i - 1].group.name
-        qtile.current_window.togroup(group)
-
-
-def window_to_next_screen(qtile):
-    i = qtile.screens.index(qtile.current_screen)
-    if i + 1 != len(qtile.screens):
-        group = qtile.screens[i + 1].group.name
-        qtile.current_window.togroup(group)
-
-
-def switch_screens(qtile):
-    i = qtile.screens.index(qtile.current_screen)
-    group = qtile.screens[i - 1].group
-    qtile.current_screen.set_group(group)
-
-
 mouse = [
-    Drag(
-        [mod],
-        "Button1",
-        lazy.window.set_position_floating(),
-        start=lazy.window.get_position(),
-    ),
-    Drag(
-        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
-    ),
+    Drag([mod], "Button1", lazy.window.set_position_floating(), start=lazy.window.get_position()),
+    Drag([mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
@@ -543,14 +385,7 @@ auto_minimize = True
 def start_once():
     home = os.path.expanduser("~")
     subprocess.call([home + "/.config/qtile/autostart.sh"])
+    subprocess.call([home + "/.config/change_resolution.sh"])
 
 
-# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
-# string besides java UI toolkits; you can see several discussions on the
-# mailing lists, GitHub issues, and other WM documentation that suggest setting
-# this string if your java app doesn't work correctly. We may as well just lie
-# and say that we're a working one by default.
-#
-# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
-# java that happens to be on java's whitelist.
 wmname = "LG3D"
