@@ -83,16 +83,3 @@ require("main.signals")
 --Autostart Apps
 awful.spawn.with_shell("picom")
 awful.spawn.with_shell("nm-applet")
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-awful.spawn.with_shell("bash ~/.config/run_emacs_client.sh")
-=======
-awful.spawn.with_shell("bash ~/.config/change_resolution.sh")
-awful.spawn.with_shell("bash ~/.config/run_emacs-daemon.sh")
-
-
-
->>>>>>> Stashed changes
-=======
-awful.spawn.with_shell("bash ~/.config/run_emacs_client.sh")
->>>>>>> 409e904 (Added qtile config)

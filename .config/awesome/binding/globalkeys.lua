@@ -10,6 +10,8 @@ local menubar = require("menubar")
 local modkey = RC.vars.modkey
 local terminal = RC.vars.terminal
 
+local layouts = RC.layouts
+
 local _M = {}
 
 -- reading
@@ -219,12 +221,30 @@ function _M.get()
     ),
     awful.key(
       { modkey }, "d",
-      function() awful.spawn("rofi -show drun") end,
+      function() awful.spawn("rofi -show run") end,
       {description = "show Dmenu", group = "launcher"}
     ),
     awful.key(
       { modkey }, "e",
       function() awful.spawn("emacsclient -c") end,
+<<<<<<< HEAD
+      {description = "show EmacsClient", group = "launcher"}
+    ),
+    awful.key(
+      { modkey }, "y",
+      function() awful.spawn("ytfzf -D") end,
+      {description = "youtube search", group = "launcher"}
+    ),
+    awful.key(
+      { modkey }, "g",
+      function() awful.spawn("./Apps/godot/bin/godot.linuxbsd.editor.x86_64") end,
+      {description = "show Dmenu", group = "launcher"}
+    ),
+    awful.key(
+      { modkey }, "e",
+      function() awful.spawn("emacsclient -c") end,
+=======
+>>>>>>> 409e904 (Added qtile config)
       {description = "show emacs client", group = "launcher"}
     )
   )
