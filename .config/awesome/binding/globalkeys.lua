@@ -106,10 +106,16 @@ function _M.get()
     ),
 
     -- Standard program
+    -- awful.key(
+    --   { modkey,           }, "Return",
+    --   function () awful.spawn(terminal) end,
+    --   {description = "open a terminal", group = "launcher"}
+    -- ),
+
     awful.key(
       { modkey,           }, "Return",
-      function () awful.spawn(terminal) end,
-      {description = "open a terminal", group = "launcher"}
+      function() awful.spawn("emacsclient -ce (vterm)") end,
+      {description = "show emacs client", group = "launcher"}
     ),
 
     awful.key(
@@ -215,6 +221,11 @@ function _M.get()
       { modkey }, "d",
       function() awful.spawn("rofi -show drun") end,
       {description = "show Dmenu", group = "launcher"}
+    ),
+    awful.key(
+      { modkey }, "e",
+      function() awful.spawn("emacsclient -c") end,
+      {description = "show emacs client", group = "launcher"}
     )
   )
   return globalkeys
