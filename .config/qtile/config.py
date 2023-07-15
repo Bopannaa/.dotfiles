@@ -11,21 +11,34 @@ from libqtile.lazy import lazy
 from typing import List
 
 mod = "mod4"
-myTerm = "alacritty"
 myBrowser = "firefox"
 sleepCommand = "sleep 1 && xset -display :0.0 dpms force off"
 ssh_youtube = "sshpass -p '23121989' ssh bopanna@192.168.43.231 DISPLAY=:0 ytfzf -Df"
-power_menu_cmd = "echo -e 'poweroff\nreboot\nsuspend' | dmenu -l 5 -fn 'Ubuntu-18' | xargs systemctl"
+power_menu_cmd = (
+    "echo -e 'poweroff\nreboot\nsuspend' | dmenu -l 5 -fn 'Ubuntu-18' | xargs systemctl"
+)
+
+hostname = socket.gethostname()
+
+if hostname == "bopanna-inspiron1545":
+    myTerm = "st"
+    wifi_name = "wlp12s0"
+else:
+    myTerm = "alacritty"
+    wifi_name = "wlan0"
 
 
 def power_menu(qtile):
     subprocess.run([power_menu_cmd], shell=True)
 
+
 def Sleep_laptop(qtile):
     subprocess.run([sleepCommand], shell=True)
 
+
 def browse_youtube_remote(qtile):
     subprocess.run([ssh_youtube], shell=True)
+
 
 keys = [
     ### The essentials
@@ -38,7 +51,6 @@ keys = [
     Key([mod, "shift"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload Qtile Config"),
     Key([mod, "shift"], "q", lazy.function(power_menu), desc="Shutdown Qtile"),
-
     ### Window controls
     Key([mod], "j", lazy.layout.down(), desc="Move focus down in current stack pane"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up in current stack pane"),
@@ -93,7 +105,6 @@ keys = [
         lazy.layout.next(),
         desc="Switch window focus to other pane(s) of stack",
     ),
-
     # Emacs programs launched using the key chord CTRL+e followed by 'key'
     KeyChord(
         [mod],
@@ -287,10 +298,9 @@ def init_widgets_list():
             fontsize=14,
         ),
         widget.WindowName(foreground=colors[6], background=colors[0], padding=0),
-        widget.Systray(background=colors[0], padding=5),
         widget.Sep(linewidth=0, padding=6, foreground=colors[0], background=colors[0]),
         widget.Net(
-            interface="wlan0",
+            interface=wifi_name,
             format="Net: {down} ↓↑ {up}",
             foreground=colors[1],
             background=colors[3],
@@ -316,6 +326,7 @@ def init_widgets_list():
         widget.Clock(
             foreground=colors[1], background=colors[9], format="%A, %B %d - %H:%M "
         ),
+        widget.Systray(background=colors[0], padding=5),
     ]
     return widgets_list
 
@@ -350,8 +361,15 @@ def window_to_next_group(qtile):
 
 
 mouse = [
-    Drag([mod], "Button1", lazy.window.set_position_floating(), start=lazy.window.get_position()),
-    Drag([mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()),
+    Drag(
+        [mod],
+        "Button1",
+        lazy.window.set_position_floating(),
+        start=lazy.window.get_position(),
+    ),
+    Drag(
+        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
+    ),
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
