@@ -232,7 +232,7 @@ layouts = [
     # layout.RatioTile(**layout_theme),
     layout.MonadTall(**layout_theme),
     layout.Stack(num_stacks=2),
-    layout.Max(**layout_theme),
+    layout.Max(),
     layout.Floating(**layout_theme),
 ]
 
