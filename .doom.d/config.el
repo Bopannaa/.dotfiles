@@ -35,3 +35,5 @@
     (with-eval-after-load 'eww
       (advice-add 'eww-display-html :around
                   'eww-display-html--override-shr-external-rendering-functions))))
+
+(setq mytoken "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")
