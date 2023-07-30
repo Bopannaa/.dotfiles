@@ -15,7 +15,7 @@ myBrowser = "firefox"
 sleepCommand = "sleep 1 && xset -display :0.0 dpms force off"
 ssh_youtube = "sshpass -p '23121989' ssh bopanna@192.168.43.231 DISPLAY=:0 ytfzf -Df"
 power_menu_cmd = (
-    "echo -e 'poweroff\nreboot\nsuspend' | dmenu -l 5 -fn 'Ubuntu-18' | xargs systemctl"
+    "echo -e 'poweroff\nreboot\nsuspend\nqtile cmd-obj -o cmd -f shutdown' | dmenu -l 5 -fn 'Ubuntu-18' | xargs systemctl"
 )
 
 hostname = socket.gethostname()
