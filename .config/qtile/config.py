@@ -1,393 +1,170 @@
-# -*- coding: utf-8 -*-
-import os
-import re
-import socket
-import subprocess
-from libqtile import qtile
-from libqtile.config import Click, Drag, Group, KeyChord, Key, Match, Screen
-from libqtile.command import lazy
-from libqtile import layout, bar, widget, hook
+from libqtile import bar, layout, widget
+from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
-from typing import List
+from libqtile.utils import guess_terminal
 
 mod = "mod4"
-myBrowser = "firefox"
-sleepCommand = "sleep 1 && xset -display :0.0 dpms force off"
-ssh_youtube = "sshpass -p '23121989' ssh bopanna@192.168.43.231 DISPLAY=:0 ytfzf -Df"
-power_menu_cmd = (
-    "echo -e 'poweroff\nreboot\nsuspend\nqtile cmd-obj -o cmd -f shutdown' | dmenu -l 5 -fn 'Ubuntu-18' | xargs systemctl"
-)
-
-hostname = socket.gethostname()
-
-if hostname == "bopanna-inspiron1545":
-    myTerm = "st"
-    wifi_name = "wlp12s0"
-else:
-    myTerm = "alacritty"
-    wifi_name = "wlan0"
-
-
-def power_menu(qtile):
-    subprocess.run([power_menu_cmd], shell=True)
-
-
-def Sleep_laptop(qtile):
-    subprocess.run([sleepCommand], shell=True)
-
-
-def browse_youtube_remote(qtile):
-    subprocess.run([ssh_youtube], shell=True)
-
+terminal = guess_terminal()
+rofi = "rofi -show run"
 
 keys = [
-    ### The essentials
-    Key([mod], "Return", lazy.spawn(myTerm), desc="Launches My Terminal"),
-    Key([mod], "d", lazy.spawn("dmenu_run"), desc="Run Launcher"),
-    Key([mod], "s", lazy.function(Sleep_laptop), desc="Laptop Sleep"),
-    Key([mod], "b", lazy.spawn(myBrowser), desc="Launch Firefox"),
-    Key([mod], "space", lazy.next_layout(), desc="Toggle through layouts"),
-    Key([mod], "q", lazy.window.kill(), desc="Kill active window"),
-    Key([mod, "shift"], "r", lazy.restart(), desc="Restart Qtile"),
-    Key([mod, "control"], "r", lazy.reload_config(), desc="Reload Qtile Config"),
-    Key([mod, "shift"], "q", lazy.function(power_menu), desc="Shutdown Qtile"),
-    ### Window controls
-    Key([mod], "j", lazy.layout.down(), desc="Move focus down in current stack pane"),
-    Key([mod], "k", lazy.layout.up(), desc="Move focus up in current stack pane"),
+    # A list of available commands that can be bound to keys can be found
+    # at https://docs.qtile.org/en/latest/manual/config/lazy.html
+    # Switch between windows
+    Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
+    Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
+    Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
+    Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
+    Key([mod], "space", lazy.layout.next(), desc="Move window focus to other window"),
+    # Move windows between left/right columns or move up/down in current stack.
+    # Moving out of range in Columns layout will create new column.
+    Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"),
+    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
+    Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
+    # Grow windows. If current window is on the edge of screen and direction
+    # will be to screen edge - window would shrink.
+    Key([mod, "control"], "h", lazy.layout.grow_left(), desc="Grow window to the left"),
+    Key([mod, "control"], "l", lazy.layout.grow_right(), desc="Grow window to the right"),
+    Key([mod, "control"], "j", lazy.layout.grow_down(), desc="Grow window down"),
+    Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
+    Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
+    # Toggle between split and unsplit sides of stack.
+    # Split = all windows displayed
+    # Unsplit = 1 window displayed, like Max layout, but still with
+    # multiple stack panes
     Key(
         [mod, "shift"],
-        "j",
-        lazy.layout.shuffle_down(),
-        lazy.layout.section_down(),
-        desc="Move windows down in current stack",
+        "Return",
+        lazy.layout.toggle_split(),
+        desc="Toggle between split and unsplit sides of stack",
     ),
-    Key(
-        [mod, "shift"],
-        "k",
-        lazy.layout.shuffle_up(),
-        lazy.layout.section_up(),
-        desc="Move windows up in current stack",
-    ),
+    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod], "d", lazy.spawn(rofi), desc="Launch rofi"),
+    # Toggle between different layouts as defined below
+    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
     Key(
         [mod],
-        "h",
-        lazy.layout.shrink(),
-        lazy.layout.decrease_nmaster(),
-        desc="Shrink window (MonadTall), decrease number in master pane (Tile)",
+        "f",
+        lazy.window.toggle_fullscreen(),
+        desc="Toggle fullscreen on the focused window",
     ),
-    Key(
-        [mod],
-        "l",
-        lazy.layout.grow(),
-        lazy.layout.increase_nmaster(),
-        desc="Expand window (MonadTall), increase number in master pane (Tile)",
-    ),
-    Key([mod], "n", lazy.layout.normalize(), desc="normalize window size ratios"),
-    Key(
-        [mod],
-        "m",
-        lazy.layout.maximize(),
-        desc="toggle window between minimum and maximum sizes",
-    ),
-    Key([mod, "shift"], "f", lazy.window.toggle_floating(), desc="toggle floating"),
-    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="toggle fullscreen"),
-    ### Stack controls
-    Key(
-        [mod, "shift"],
-        "Tab",
-        lazy.layout.rotate(),
-        lazy.layout.flip(),
-        desc="Switch which side main pane occupies (XmonadTall)",
-    ),
-    Key(
-        [mod],
-        "Tab",
-        lazy.layout.next(),
-        desc="Switch window focus to other pane(s) of stack",
-    ),
-    # Emacs programs launched using the key chord CTRL+e followed by 'key'
-    KeyChord(
-        [mod],
-        "e",
+    Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle floating on the focused window"),
+    Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
+    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
+    Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
+]
+
+groups = [Group(i) for i in "123456789"]
+
+for i in groups:
+    keys.extend(
         [
+            # mod1 + letter of group = switch to group
             Key(
-                [],
-                "e",
-                lazy.spawn("emacsclient -c -a 'emacs'"),
-                desc="Emacsclient Dashboard",
+                [mod],
+                i.name,
+                lazy.group[i.name].toscreen(),
+                desc="Switch to group {}".format(i.name),
             ),
+            # mod1 + shift + letter of group = switch to & move focused window to group
             Key(
-                [],
-                "a",
-                lazy.spawn(
-                    "emacsclient -c -a 'emacs' --eval '(emms)' --eval '(emms-play-directory-tree \"~/Music/\")'"
-                ),
-                desc="Emacsclient EMMS (music)",
+                [mod, "shift"],
+                i.name,
+                lazy.window.togroup(i.name, switch_group=True),
+                desc="Switch to & move focused window to group {}".format(i.name),
             ),
-            Key(
-                [],
-                "b",
-                lazy.spawn("emacsclient -c -a 'emacs' --eval '(ibuffer)'"),
-                desc="Emacsclient Ibuffer",
-            ),
-            Key(
-                [],
-                "d",
-                lazy.spawn("emacsclient -c -a 'emacs' --eval '(dired nil)'"),
-                desc="Emacsclient Dired",
-            ),
-            Key(
-                [],
-                "i",
-                lazy.spawn("emacsclient -c -a 'emacs' --eval '(erc)'"),
-                desc="Emacsclient ERC (IRC)",
-            ),
-            Key(
-                [],
-                "n",
-                lazy.spawn("emacsclient -c -a 'emacs' --eval '(elfeed)'"),
-                desc="Emacsclient Elfeed (RSS)",
-            ),
-            Key(
-                [],
-                "s",
-                lazy.spawn("emacsclient -c -a 'emacs' --eval '(eshell)'"),
-                desc="Emacsclient Eshell",
-            ),
-            Key(
-                [],
-                "v",
-                lazy.spawn("emacsclient -c -a 'emacs' --eval '(+vterm/here nil)'"),
-                desc="Emacsclient Vterm",
-            ),
-            Key(
-                [],
-                "w",
-                lazy.spawn(
-                    "emacsclient -c -a 'emacs' --eval '(doom/window-maximize-buffer(eww \"distro.tube\"))'"
-                ),
-                desc="Emacsclient EWW Browser",
-            ),
-        ],
-    ),
-    # Dmenu scripts launched using the key chord SUPER+p followed by 'key'
-    KeyChord(
-        [mod],
-        "p",
-        [
-            Key([], "y", lazy.spawn("ytfzf -Df"), desc="Browse Youtube"),
-            Key([], "d", lazy.function(ssh_youtube), desc="Browse Youtube Remote"),
-        ],
-    ),
-]
-
-colors = [
-    ["#282c34", "#282c34"],
-    ["#1c1f24", "#1c1f24"],
-    ["#dfdfdf", "#dfdfdf"],
-    ["#ff6c6b", "#ff6c6b"],
-    ["#98be65", "#98be65"],
-    ["#da8548", "#da8548"],
-    ["#51afef", "#51afef"],
-    ["#c678dd", "#c678dd"],
-    ["#46d9ff", "#46d9ff"],
-    ["#a9a1e1", "#a9a1e1"],
-]
-
-groups = [
-    Group("DEV", layout="monadtall"),
-    Group("WWW", layout="monadtall"),
-    Group("DOC", layout="monadtall"),
-    Group("CHAT", layout="monadtall"),
-    Group("MUS", layout="monadtall"),
-    Group("VID", layout="monadtall"),
-    Group("GFX", layout="floating"),
-    Group("SYS", layout="monadtall"),
-]
-
-# Allow MODKEY+[0 through 9] to bind to groups, see https://docs.qtile.org/en/stable/manual/config/groups.html
-# MOD4 + index Number : Switch to Group[index]
-# MOD4 + shift + index Number : Send active window to another Group
-from libqtile.dgroups import simple_key_binder
-
-dgroups_key_binder = simple_key_binder("mod4")
-
-layout_theme = {
-    "border_width": 2,
-    "margin": 8,
-    "border_focus": colors[6],  # "e1acff",
-    "border_normal": "1D2330",
-}
+            # Or, use below if you prefer not to switch to that group.
+            # # mod1 + shift + letter of group = move focused window to group
+            # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
+            #     desc="move focused window to group {}".format(i.name)),
+        ]
+    )
 
 layouts = [
-    # layout.MonadWide(**layout_theme),
-    # layout.Bsp(**layout_theme),
-    # layout.Stack(stacks=2, **layout_theme),
-    # layout.Columns(**layout_theme),
-    # layout.RatioTile(**layout_theme),
-    # layout.Tile(shift_windows=True, **layout_theme),
-    # layout.VerticalTile(**layout_theme),
-    # layout.Matrix(**layout_theme),
-    # layout.Zoomy(**layout_theme),
-    # layout.RatioTile(**layout_theme),
-    layout.MonadTall(**layout_theme),
-    layout.Stack(num_stacks=2),
+    layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
     layout.Max(),
-    layout.Floating(**layout_theme),
+    # Try more layouts by unleashing below layouts.
+    # layout.Stack(num_stacks=2),
+    # layout.Bsp(),
+    # layout.Matrix(),
+    # layout.MonadTall(),
+    # layout.MonadWide(),
+    # layout.RatioTile(),
+    # layout.Tile(),
+    # layout.TreeTab(),
+    # layout.VerticalTile(),
+    # layout.Zoomy(),
 ]
 
-
-prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
-
-##### DEFAULT WIDGET SETTINGS #####
-widget_defaults = dict(font="Ubuntu Bold", fontsize=10, padding=2, background=colors[2])
+widget_defaults = dict(
+    font="sans",
+    fontsize=12,
+    padding=3,
+)
 extension_defaults = widget_defaults.copy()
 
-
-def init_widgets_list():
-    widgets_list = [
-        widget.Sep(linewidth=0, padding=6, foreground=colors[2], background=colors[0]),
-        widget.Image(
-            filename="~/.config/qtile/icons/python-white.png",
-            scale="False",
-            mouse_callbacks={"Button1": lambda: qtile.cmd_spawn(myTerm)},
+screens = [
+    Screen(
+        top=bar.Bar(
+            [
+                widget.GroupBox(),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.CurrentLayoutIcon(scale = 0.6),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.Prompt(),
+                widget.WindowName(background = "#8FBCBB", foreground = "#2E3440"),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.Systray(background = "#2E3440", foreground = "#EBCB8B"),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.TextBox("  ", background = "#2E3440", foreground = "#5E81AC", fontsize=15),
+                widget.Memory(background = "#2E3440", foreground = "#EBCB8B"),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.TextBox("  ", background = "#2E3440", foreground = "#5E81AC", fontsize=15),
+                widget.CPU(background = "#2E3440", foreground = "#EBCB8B"),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+                widget.TextBox("  ", background = "#2E3440", foreground = "#5E81AC", fontsize=15),
+                widget.Clock(format="%Y-%m-%d %a %I:%M %p", background = "#2E3440", foreground = "#EBCB8B"),
+                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
+            ],
+            24,
+            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
+            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
         ),
-        widget.Sep(linewidth=0, padding=6, foreground=colors[2], background=colors[0]),
-        widget.GroupBox(
-            font="Ubuntu Bold",
-            fontsize=12,
-            margin_y=3,
-            margin_x=0,
-            padding_y=5,
-            padding_x=3,
-            borderwidth=3,
-            active=colors[2],
-            inactive=colors[7],
-            rounded=False,
-            highlight_color=colors[1],
-            highlight_method="line",
-            this_current_screen_border=colors[6],
-            this_screen_border=colors[4],
-            other_current_screen_border=colors[6],
-            other_screen_border=colors[4],
-            foreground=colors[2],
-            background=colors[0],
-        ),
-        widget.TextBox(
-            text="|",
-            font="Ubuntu Mono",
-            background=colors[0],
-            foreground="474747",
-            padding=2,
-            fontsize=14,
-        ),
-        widget.CurrentLayoutIcon(
-            custom_icon_paths=[os.path.expanduser("~/.config/qtile/icons")],
-            foreground=colors[2],
-            background=colors[0],
-            padding=0,
-            scale=0.7,
-        ),
-        widget.CurrentLayout(foreground=colors[2], background=colors[0], padding=5),
-        widget.TextBox(
-            text="|",
-            font="Ubuntu Mono",
-            background=colors[0],
-            foreground="474747",
-            padding=2,
-            fontsize=14,
-        ),
-        widget.WindowName(foreground=colors[6], background=colors[0], padding=0),
-        widget.Sep(linewidth=0, padding=6, foreground=colors[0], background=colors[0]),
-        widget.Net(
-            interface=wifi_name,
-            format="Net: {down} ↓↑ {up}",
-            foreground=colors[1],
-            background=colors[3],
-            padding=5,
-        ),
-        widget.ThermalSensor(
-            foreground=colors[1],
-            background=colors[4],
-            threshold=90,
-            fmt="Temp: {}",
-            padding=5,
-        ),
-        widget.Memory(
-            foreground=colors[1],
-            background=colors[6],
-            mouse_callbacks={"Button1": lambda: qtile.cmd_spawn(myTerm + " -e htop")},
-            fmt="Mem: {}",
-            padding=5,
-        ),
-        widget.Volume(
-            foreground=colors[1], background=colors[7], fmt="Vol: {}", padding=5
-        ),
-        widget.Clock(
-            foreground=colors[1], background=colors[9], format="%A, %B %d - %H:%M "
-        ),
-        widget.Systray(background=colors[0], padding=5),
-    ]
-    return widgets_list
+        # You can uncomment this variable if you see that on X11 floating resize/moving is laggy
+        # By default we handle these events delayed to already improve performance, however your system might still be struggling
+        # This variable is set to None (no cap) by default, but you can set it to 60 to indicate that you limit it to 60 events per second
+        # x11_drag_polling_rate = 60,
+    ),
+]
 
-
-def init_widgets_screen():
-    widgets_screen = init_widgets_list()
-    return widgets_screen
-
-
-def init_screens():
-    return [
-        Screen(top=bar.Bar(widgets=init_widgets_screen(), opacity=1.0, size=20)),
-    ]
-
-
-if __name__ in ["config", "__main__"]:
-    screens = init_screens()
-    widgets_list = init_widgets_list()
-    widgets_screen = init_widgets_screen()
-
-
-def window_to_prev_group(qtile):
-    if qtile.currentWindow is not None:
-        i = qtile.groups.index(qtile.currentGroup)
-        qtile.currentWindow.togroup(qtile.groups[i - 1].name)
-
-
-def window_to_next_group(qtile):
-    if qtile.currentWindow is not None:
-        i = qtile.groups.index(qtile.currentGroup)
-        qtile.currentWindow.togroup(qtile.groups[i + 1].name)
-
-
+# Drag floating layouts.
 mouse = [
-    Drag(
-        [mod],
-        "Button1",
-        lazy.window.set_position_floating(),
-        start=lazy.window.get_position(),
-    ),
-    Drag(
-        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
-    ),
+    Drag([mod], "Button1", lazy.window.set_position_floating(), start=lazy.window.get_position()),
+    Drag([mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
-dgroups_app_rules = []  # type: List
+dgroups_key_binder = None
+dgroups_app_rules = []  # type: list
 follow_mouse_focus = True
 bring_front_click = False
+floats_kept_above = True
 cursor_warp = False
-
 floating_layout = layout.Floating(
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
-        # default_float_rules include: utility, notification, toolbar, splash, dialog,
-        # file_progress, confirm, download and error.
         *layout.Floating.default_float_rules,
-        Match(title="Confirmation"),  # tastyworks exit box
-        Match(title="Qalculate!"),  # qalculate-gtk
-        Match(wm_class="kdenlive"),  # kdenlive
-        Match(wm_class="pinentry-gtk-2"),  # GPG key password entry
+        Match(wm_class="confirmreset"),  # gitk
+        Match(wm_class="makebranch"),  # gitk
+        Match(wm_class="maketag"),  # gitk
+        Match(wm_class="ssh-askpass"),  # ssh-askpass
+        Match(title="branchdialog"),  # gitk
+        Match(title="pinentry"),  # GPG key password entry
     ]
 )
 auto_fullscreen = True
@@ -398,12 +175,10 @@ reconfigure_screens = True
 # focus, should we respect this or not?
 auto_minimize = True
 
+# When using the Wayland backend, this can be used to configure input devices.
+wl_input_rules = None
 
-@hook.subscribe.startup_once
-def start_once():
-    home = os.path.expanduser("~")
-    subprocess.call([home + "/.config/qtile/autostart.sh"])
-    subprocess.call([home + "/.config/change_resolution.sh"])
-
-
+# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
+# java that happens to be on java's whitelist.
 wmname = "LG3D"
+

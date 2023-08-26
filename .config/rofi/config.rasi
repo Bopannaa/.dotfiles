@@ -1,6 +1,6 @@
 configuration {
  modi: "window,drun,ssh,combi";
- font: "hack 15";
+ font: "JetBrains Mono 15";
  combi-modi: "window,drun,ssh";
  }
 @theme "center"
