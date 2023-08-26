@@ -1,0 +1,8 @@
+#!/bin/sh
+
+lxsession &
+picom &
+nitrogen --restore &
+nm-applet &
+volumeicon &
+dunst &
