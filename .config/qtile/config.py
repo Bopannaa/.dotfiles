@@ -1,11 +1,18 @@
+import os
+import subprocess
 from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
+import colors
+import mywidgets
+
 mod = "mod4"
-terminal = guess_terminal()
+
 rofi = "rofi -show run"
+widgetlist = mywidgets.widgetlist2
+terminal = "alacritty"
 
 keys = [
     # A list of available commands that can be bound to keys can be found
@@ -82,20 +89,47 @@ for i in groups:
         ]
     )
 
+### COLORSCHEME ###
+# Colors are defined in a separate 'colors.py' file.
+# There 10 colorschemes available to choose from:
+#
+# colors = colors.DoomOne
+# colors = colors.Dracula
+# colors = colors.GruvboxDark
+# colors = colors.MonokaiPro
+# colors = colors.Nord
+# colors = colors.OceanicNext
+# colors = colors.Palenight
+# colors = colors.SolarizedDark
+# colors = colors.SolarizedLight
+# colors = colors.TomorrowNight
+#
+# It is best not manually change the colorscheme; instead run 'dtos-colorscheme'
+# which is set to 'MOD + p c'
+
+colors = colors.Palenight
+
+layout_theme = {"border_width": 2,
+                "margin": 8,
+                "border_focus": colors[8],
+                "border_normal": colors[0]
+                }
 layouts = [
-    layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
-    layout.Max(),
-    # Try more layouts by unleashing below layouts.
-    # layout.Stack(num_stacks=2),
-    # layout.Bsp(),
-    # layout.Matrix(),
-    # layout.MonadTall(),
-    # layout.MonadWide(),
-    # layout.RatioTile(),
-    # layout.Tile(),
-    # layout.TreeTab(),
-    # layout.VerticalTile(),
-    # layout.Zoomy(),
+    #layout.Bsp(**layout_theme),
+    #layout.Floating(**layout_theme)
+    #layout.RatioTile(**layout_theme),
+    #layout.Tile(shift_windows=True, **layout_theme),
+    #layout.VerticalTile(**layout_theme),
+    #layout.Matrix(**layout_theme),
+    layout.MonadTall(**layout_theme),
+    #layout.MonadWide(**layout_theme),
+    layout.Max(
+         border_width = 0,
+         margin = 0,
+         ),
+    layout.Stack(**layout_theme, num_stacks=2),
+    layout.Columns(**layout_theme),
+    layout.Zoomy(**layout_theme),
 ]
 
 widget_defaults = dict(
@@ -108,29 +142,7 @@ extension_defaults = widget_defaults.copy()
 screens = [
     Screen(
         top=bar.Bar(
-            [
-                widget.GroupBox(),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.CurrentLayoutIcon(scale = 0.6),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.Prompt(),
-                widget.WindowName(background = "#8FBCBB", foreground = "#2E3440"),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.Systray(background = "#2E3440", foreground = "#EBCB8B"),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.TextBox("  ", background = "#2E3440", foreground = "#5E81AC", fontsize=15),
-                widget.Memory(background = "#2E3440", foreground = "#EBCB8B"),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.TextBox("  ", background = "#2E3440", foreground = "#5E81AC", fontsize=15),
-                widget.CPU(background = "#2E3440", foreground = "#EBCB8B"),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-                widget.TextBox("  ", background = "#2E3440", foreground = "#5E81AC", fontsize=15),
-                widget.Clock(format="%Y-%m-%d %a %I:%M %p", background = "#2E3440", foreground = "#EBCB8B"),
-                widget.TextBox("", background = "#2E3440", foreground = "#A3BE8C", fontsize=18),
-            ],
+            widgetlist,
             24,
             # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
             # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta

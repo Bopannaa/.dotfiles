@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+from libqtile import widget
+import colors
+
+colors = colors.Palenight
+
+widgetlist1 = [
+                widget.GroupBox(),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.CurrentLayoutIcon(scale = 0.6),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.Prompt(),
+                widget.WindowName(background = colors[2], foreground = colors[8]),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.Systray(background = colors[0], foreground = colors[5]),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.TextBox("  ", background = colors[0], foreground = colors[6], fontsize=15),
+                widget.Memory(background = colors[0], foreground = colors[5]),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.TextBox("  ", background = colors[0], foreground = colors[6], fontsize=15),
+                widget.CPU(background = colors[0], foreground = colors[5]),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+                widget.TextBox("  ", background = colors[0], foreground = colors[6], fontsize=15),
+                widget.Clock(format="%Y-%m-%d %a %I:%M %p", background = colors[0], foreground = colors[5]),
+                widget.TextBox("", background = colors[0], foreground = colors[4], fontsize=18),
+]
+
+widgetlist2 = [
+                widget.CurrentLayoutIcon(scale = 0.6),
+                widget.GroupBox(),
+                widget.Prompt(),
+                widget.WindowName(background = colors[2], foreground = colors[8]),
+
+                widget.TextBox("  ", background = colors[0], foreground = colors[6], fontsize=15),
+                widget.Memory(background = colors[0], foreground = colors[5]),
+
+                widget.TextBox("  ", background = colors[0], foreground = colors[6], fontsize=15),
+                widget.CPU(background = colors[0], foreground = colors[5]),
+
+                widget.TextBox("  ", background = colors[0], foreground = colors[6], fontsize=15),
+                widget.Clock(format="%Y-%m-%d %a %I:%M %p", background = colors[0], foreground = colors[5]),
+
+                widget.Systray(background = colors[0], foreground = colors[5]),
+]
