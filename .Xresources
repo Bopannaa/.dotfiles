@@ -324,3 +324,4 @@ rofi.bw           : 2
 !
 ! For more information, see 'man 7 urxvt'
 #
+#Emacs.font : Jetbrains Mono 14

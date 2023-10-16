@@ -1,0 +1,56 @@
+theme = "catppuccin_mocha_custom"
+
+[editor]
+line-number = "relative"
+mouse = false
+true-color = true
+color-modes = true
+bufferline = "multiple"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.file-picker]
+hidden = false
+
+[keys.insert]
+"C-right" = ["move_next_word_start", "move_char_right", "collapse_selection"]
+"C-left" = ["move_prev_word_start", "move_char_left", "collapse_selection"]
+"C-up" = "open_above"
+"C-down" = "open_below"
+
+[editor.statusline]
+left = [
+  "mode",
+  "spacer",
+  "version-control",
+  "spacer",
+  "separator",
+  "file-name",
+  "file-modification-indicator"
+]
+right = [
+  "spinner",
+  "spacer",
+  "workspace-diagnostics",
+  "separator",
+  "spacer",
+  "diagnostics",
+  "position",
+  "file-encoding",
+  "file-line-ending",
+  "file-type"
+]
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.indent-guides]
+render = true
+character = "╎" # Some characters that work well: "▏", "┆", "┊", "╎"
+skip-levels = 0
+
+[keys.normal.space]
+c = { b = ":buffer-close", o = ":config-open", r = ":config-reload", l = ":o ~/.config/helix/languages.toml"}

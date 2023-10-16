@@ -10,8 +10,8 @@
     border-color:               #282c34;
     text-color:                 #bbc2cf;
     height:                     20px;
-    font:                       "JetBrains Mono 10";
-    prompt-font:                "JetBrains Mono 10";
+    font:                       "Ubuntu 8";
+    prompt-font:                "Ubuntu 8";
     prompt-background:          #51afef;
     prompt-foreground:          #282c34;
     prompt-padding:             2px;
