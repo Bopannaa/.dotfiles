@@ -1,7 +1,7 @@
 import os
 import subprocess
 from libqtile import bar, layout, widget
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Click, Drag, Group, Key, Match, Screen, DropDown, ScratchPad
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
@@ -11,7 +11,7 @@ import mywidgets
 mod = "mod4"
 
 rofi = "rofi -show run"
-widgetlist = mywidgets.widgetlist2
+widgetlist = mywidgets.widgetlist
 terminal = "alacritty"
 
 keys = [
@@ -46,7 +46,9 @@ keys = [
         lazy.layout.toggle_split(),
         desc="Toggle between split and unsplit sides of stack",
     ),
-    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod], "Return", lazy.spawn("alacritty"), desc="Launch terminal"),
+    Key([mod], "t", lazy.group['scratchpad'].dropdown_toggle('term'), desc="Launch Dropdown terminal"),
+    Key([mod], "e", lazy.group['scratchpad'].dropdown_toggle('em'), desc="Launch terminal"),
     Key([mod], "d", lazy.spawn(rofi), desc="Launch rofi"),
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
@@ -57,7 +59,7 @@ keys = [
         lazy.window.toggle_fullscreen(),
         desc="Toggle fullscreen on the focused window",
     ),
-    Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle floating on the focused window"),
+    Key([mod], "s", lazy.window.toggle_floating(), desc="Toggle floating on the focused window"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
@@ -88,6 +90,11 @@ for i in groups:
             #     desc="move focused window to group {}".format(i.name)),
         ]
     )
+
+groups.append(ScratchPad('scratchpad',[
+    DropDown('term', 'alacritty', width = 0.8, height = 0.8, x = 0.1, y = 0.1, opacity = 0.9),
+    DropDown('em', "emacsclient -tc", width = 0.8, height = 0.8, x = 0.1, y = 0.1, opacity = 0.9),
+]))
 
 ### COLORSCHEME ###
 # Colors are defined in a separate 'colors.py' file.
@@ -193,4 +200,3 @@ wl_input_rules = None
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
 wmname = "LG3D"
-

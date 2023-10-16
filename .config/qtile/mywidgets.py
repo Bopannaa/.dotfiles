@@ -45,3 +45,31 @@ widgetlist2 = [
 
                 widget.Systray(background = colors[0], foreground = colors[5]),
 ]
+
+widgetlist3 = [
+                widget.CurrentLayoutIcon(scale = 0.6),
+                widget.GroupBox(),
+                widget.Prompt(),
+                widget.WindowName(background = colors[2], foreground = colors[8]),
+
+                widget.Spacer(background = colors[0], length = 10),
+
+                widget.Image(filename = "~/.config/qtile/icons/ram-memory.png", background = colors[0], margin = 2),
+                widget.Memory(background = colors[0], foreground = colors[5],format = '{MemUsed: .0f}{mm}'),
+
+                widget.Spacer(background = colors[0], length = 10),
+
+                widget.Image(filename = "~/.config/qtile/icons/cpu.png", background = colors[0], margin = 3),
+                widget.CPU(background = colors[0], foreground = colors[5],format = '{load_percent}%'),
+
+                widget.Spacer(background = colors[0], length = 10),
+
+                widget.Image(filename = "~/.config/qtile/icons/schedule.png", background = colors[0], margin = 2),
+                widget.Clock(format="%d-%m-%Y %a %I:%M %p", background = colors[0], foreground = colors[5]),
+
+                widget.Spacer(background = colors[0], length = 10),
+
+                widget.Systray(background = colors[0], foreground = colors[5]),
+]
+
+widgetlist = widgetlist3

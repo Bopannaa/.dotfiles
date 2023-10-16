@@ -1,8 +1,10 @@
 #!/bin/sh
 
+autostart.sh &
 lxsession &
 picom &
 nitrogen --restore &
 nm-applet &
 volumeicon &
 dunst &
+emacs --daemon &

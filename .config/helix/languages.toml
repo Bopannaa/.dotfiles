@@ -1,0 +1,3 @@
+[[language]]
+name = "html"
+language-server = {command = "emmet-language-server", args = ["--stdio"]}
